@@ -20,8 +20,27 @@ const theme = extendTheme({
     },
   },
   fonts: {
-    heading: `'Inter', sans-serif`,
-    body: `'Inter', sans-serif`,
+    heading: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif`,
+    body: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif`,
+    mono: `'JetBrains Mono', 'Fira Code', monospace`,
+  },
+  textStyles: {
+    h1: {
+      fontSize: ['2xl', '3xl', '4xl'],
+      fontWeight: 'bold',
+      lineHeight: 'short',
+      letterSpacing: 'tight',
+    },
+    h2: {
+      fontSize: ['xl', '2xl', '3xl'],
+      fontWeight: 'semibold',
+      lineHeight: 'shorter',
+      letterSpacing: 'tight',
+    },
+    body: {
+      fontSize: ['sm', 'md', 'lg'],
+      lineHeight: 'tall',
+    },
   },
   styles: {
     global: (props) => ({

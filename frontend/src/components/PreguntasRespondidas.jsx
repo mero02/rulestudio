@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { Table, Thead, Tbody, Tr, Th, Td, Box, Text } from '@chakra-ui/react';
 import axios from 'axios';
 
-const PreguntasRespondidas = ({ refresh }) => {
+const PreguntasRespondidas = memo(({ refresh }) => {
   const [preguntas, setPreguntas] = useState([]);
 
   useEffect(() => {
@@ -43,6 +43,8 @@ const PreguntasRespondidas = ({ refresh }) => {
       )}
     </Box>
   );
-};
+});
+
+PreguntasRespondidas.displayName = 'PreguntasRespondidas';
 
 export default PreguntasRespondidas;

@@ -97,6 +97,10 @@ const ModalPregunta = ({ isOpen, onClose, pregunta, onRespuesta }) => {
   const [showResult, setShowResult] = useState(false);
   const [resultData, setResultData] = useState(null);
 
+  // Hooks deben estar antes de cualquier return condicional
+  const modalBg = useColorModeValue('white', 'gray.800');
+  const textColor = useColorModeValue('gray.800', 'white');
+
   // Reproducir sonido cuando se abre el modal de pregunta
   useEffect(() => {
     if (isOpen && pregunta) {
@@ -139,14 +143,23 @@ const ModalPregunta = ({ isOpen, onClose, pregunta, onRespuesta }) => {
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} size="lg">
+      <Modal isOpen={isOpen} onClose={onClose} size={{ base: 'sm', md: 'lg' }}>
         <ModalOverlay />
-        <ModalContent bg={useColorModeValue('white', 'gray.800')}>
-          <ModalHeader color={useColorModeValue('gray.800', 'white')}>Pregunta</ModalHeader>
+        <ModalContent bg={modalBg} mx={4}>
+          <ModalHeader color={textColor} fontSize={{ base: 'lg', md: 'xl' }}>
+            Pregunta
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-            <Text color="white" mb={4} fontSize="lg">{pregunta.frase}</Text>
-            <VStack spacing={3} align="stretch">
+            <Text
+              id="question-text"
+              color={textColor}
+              mb={4}
+              fontSize={{ base: 'md', md: 'lg' }}
+            >
+              {pregunta.frase}
+            </Text>
+            <VStack spacing={3} align="stretch" role="radiogroup" aria-labelledby="question-text">
               {pregunta.opciones.map((opcion, index) => (
                 <motion.div
                   key={index}
@@ -159,11 +172,15 @@ const ModalPregunta = ({ isOpen, onClose, pregunta, onRespuesta }) => {
                     onClick={() => handleRespuesta(opcion)}
                     colorScheme={selected === opcion ? 'blue' : 'gray'}
                     variant={selected === opcion ? 'solid' : 'outline'}
-                    size="lg"
+                    size={{ base: 'md', md: 'lg' }}
                     justifyContent="flex-start"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     width="100%"
+                    fontSize={{ base: 'sm', md: 'md' }}
+                    aria-pressed={selected === opcion}
+                    role="option"
+                    aria-selected={selected === opcion}
                   >
                     {opcion}
                   </Button>
@@ -174,7 +191,7 @@ const ModalPregunta = ({ isOpen, onClose, pregunta, onRespuesta }) => {
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={showResult} onClose={handleCloseResult} size="md">
+      <Modal isOpen={showResult} onClose={handleCloseResult} size={{ base: 'sm', md: 'md' }}>
         <ModalOverlay />
         <ModalContent
           as={motion.div}
@@ -184,8 +201,11 @@ const ModalPregunta = ({ isOpen, onClose, pregunta, onRespuesta }) => {
           transition={{ duration: 0.3 }}
           bg={resultData?.esCorrecto ? 'green.500' : 'red.500'}
           color="white"
+          mx={4}
         >
-          <ModalHeader>{resultData?.esCorrecto ? '¡Correcto!' : 'Incorrecto'}</ModalHeader>
+          <ModalHeader fontSize={{ base: 'lg', md: 'xl' }}>
+            {resultData?.esCorrecto ? '¡Correcto!' : 'Incorrecto'}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <motion.div
@@ -193,15 +213,15 @@ const ModalPregunta = ({ isOpen, onClose, pregunta, onRespuesta }) => {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.3 }}
             >
-              <Text>Tu respuesta: {resultData?.tuRespuesta}</Text>
-              <Text>Respuesta correcta: {resultData?.correcta}</Text>
+              <Text fontSize={{ base: 'sm', md: 'md' }}>Tu respuesta: {resultData?.tuRespuesta}</Text>
+              <Text fontSize={{ base: 'sm', md: 'md' }}>Respuesta correcta: {resultData?.correcta}</Text>
             </motion.div>
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4, duration: 0.3 }}
             >
-              <Button onClick={handleCloseResult} colorScheme="blue" mt={4}>
+              <Button onClick={handleCloseResult} colorScheme="blue" mt={4} size={{ base: 'sm', md: 'md' }}>
                 Continuar
               </Button>
             </motion.div>
