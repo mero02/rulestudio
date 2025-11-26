@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { Box, Button, Text } from '@chakra-ui/react';
+import { motion } from 'framer-motion';
 import { Wheel } from 'react-custom-roulette';
 import useStore from '../store';
 import axios from 'axios';
@@ -103,38 +105,44 @@ const Ruleta = ({ onSeleccionarPregunta }) => {
   }, []);
 
   return (
-    <div style={{ textAlign: 'center', padding: '16px' }}>
+    <Box textAlign="center">
       {data.length > 0 ? (
         <>
-        <button
+          <Button
+            as={motion.button}
             onClick={handleSpinClick}
-            disabled={mustSpin}
-            style={{
-              marginTop: '6px',
-              padding: '8px 16px',
-              backgroundColor: mustSpin ? '#ccc' : '#28a745',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: mustSpin ? 'not-allowed' : 'pointer',
-            }}
+            isDisabled={mustSpin}
+            colorScheme="brand"
+            size="lg"
+            mb={4}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            animate={mustSpin ? { rotate: 360 } : { rotate: 0 }}
+            transition={{ duration: 0.3 }}
           >
             Girar Ruleta
-          </button>
-          <Wheel
-            mustStartSpinning={mustSpin}
-            prizeNumber={prizeNumber}
-            data={data}
-            onStopSpinning={handleStopSpinning}
-            backgroundColors={['#ff8f43', '#70bbe0', '#0b3351', '#f9dd50']}
-            textColors={['#ffffff']}
-            spinDuration={0.5} // Más rápido
-          />
+          </Button>
+          <Box className="wheel-container">
+            <motion.div
+              animate={mustSpin ? { rotate: [0, 10, -10, 0] } : { rotate: 0 }}
+              transition={{ duration: 0.5, repeat: mustSpin ? Infinity : 0 }}
+            >
+              <Wheel
+                mustStartSpinning={mustSpin}
+                prizeNumber={prizeNumber}
+                data={data}
+                onStopSpinning={handleStopSpinning}
+                backgroundColors={['#ff8f43', '#70bbe0', '#0b3351', '#f9dd50']}
+                textColors={['#ffffff']}
+                spinDuration={0.5}
+              />
+            </motion.div>
+          </Box>
         </>
       ) : (
-        <p>No hay preguntas activas. Importa un CSV primero.</p>
+        <Text color="gray.600">No hay preguntas activas. Importa un CSV primero.</Text>
       )}
-    </div>
+    </Box>
   );
 };
 

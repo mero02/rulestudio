@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Box, Button, Input, Text, VStack } from '@chakra-ui/react';
 import axios from 'axios';
 
 const CargarCSV = ({ onCargar }) => {
@@ -29,17 +30,24 @@ const CargarCSV = ({ onCargar }) => {
   };
 
   return (
-    <div style={{ padding: '2px' }}>
-      <p style={{ marginBottom: '2px' }}>Cargar archivo CSV con preguntas</p>
-      <input type="file" accept=".csv" onChange={handleFileChange} style={{ marginBottom: '8px', color: 'white' }} />
-      <button
+    <VStack spacing={4} align="stretch">
+      <Text fontSize="lg" fontWeight="bold">Cargar archivo CSV con preguntas</Text>
+      <Input
+        type="file"
+        accept=".csv"
+        onChange={handleFileChange}
+        size="md"
+      />
+      <Button
         onClick={handleUpload}
-        disabled={loading}
-        className="button"
+        isDisabled={loading}
+        colorScheme="brand"
+        isLoading={loading}
+        loadingText="Importando..."
       >
-        {loading ? 'Importando...' : 'Importar CSV'}
-      </button>
-    </div>
+        Importar CSV
+      </Button>
+    </VStack>
   );
 };
 

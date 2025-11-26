@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Box, Button, Flex, Heading, Text, VStack } from '@chakra-ui/react';
 import useStore from '../store';
 import axios from 'axios';
 
@@ -22,31 +23,35 @@ const Estadisticas = () => {
   };
 
   return (
-    <div style={{ padding: '16px' }}>
-      <h2 style={{ fontSize: '24px', marginBottom: '16px' }}>Estadísticas</h2>
-      <div style={{ marginTop: '16px', display: 'flex', gap: '30px' }}>
-          <div className="stat-number">Total respondidas: {estadisticas.totalRespondidas}</div>
-          <div className="stat-number" style={{ color: '#28a745' }}>Correctas: {estadisticas.totalCorrectas}</div>
-          <div className="stat-number" style={{ color: '#dc3545' }}>Incorrectas: {estadisticas.totalIncorrectas}</div>
-      </div>
-      <div style={{ marginTop: '16px', display: 'flex', gap: '10px' }}>
-        <button
-          onClick={resetEstadisticas}
-          className="button"
-          style={{ backgroundColor: '#dc3545' }}
-        >
+    <VStack spacing={4} align="stretch">
+      <Heading size="lg">Estadísticas</Heading>
+      <Flex gap={6} wrap="wrap">
+        <Text fontSize="lg" fontWeight="bold">
+          Total respondidas: {estadisticas.totalRespondidas}
+        </Text>
+        <Text fontSize="lg" color="green.500" fontWeight="bold">
+          Correctas: {estadisticas.totalCorrectas}
+        </Text>
+        <Text fontSize="lg" color="red.500" fontWeight="bold">
+          Incorrectas: {estadisticas.totalIncorrectas}
+        </Text>
+      </Flex>
+      <Flex gap={4}>
+        <Button onClick={resetEstadisticas} colorScheme="red">
           Reiniciar estadísticas
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={handleReiniciarPreguntas}
-          disabled={loading}
-          className="button"
-          style={{ backgroundColor: loading ? '#4a5568' : '#ffc107', color: 'black' }}
+          isDisabled={loading}
+          colorScheme="yellow"
+          color="black"
+          isLoading={loading}
+          loadingText="Reiniciando..."
         >
-          {loading ? 'Reiniciando...' : 'Reiniciar preguntas'}
-        </button>
-      </div>
-    </div>
+          Reiniciar preguntas
+        </Button>
+      </Flex>
+    </VStack>
   );
 };
 

@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { Box, Flex, Grid, GridItem, useColorModeValue } from '@chakra-ui/react';
+import { motion } from 'framer-motion';
 import CargarCSV from '../components/CargarCSV';
 import Ruleta from '../components/Ruleta';
 import ModalPregunta from '../components/ModalPregunta';
 import Estadisticas from '../components/Estadisticas';
 import PreguntasRespondidas from '../components/PreguntasRespondidas';
+import ThemeToggle from '../components/ThemeToggle';
 import useStore from '../store';
 import axios from 'axios';
 
@@ -35,32 +38,57 @@ const Home = () => {
   };
 
   return (
-    <div className="container">
-      <div style={{ display: 'flex', flexDirection: 'row', gap: '0px', alignItems: 'flex-start' }}>
-        <div style={{ flex: 0 }}>
-          <div className="section">
-            <CargarCSV onCargar={handleCargar} />
-          </div>
-          <div className="section">
-            <Ruleta key={refreshRuleta} onSeleccionarPregunta={handleSeleccionarPregunta} />
-          </div>
-        </div>
-        <div style={{ flex: 1 }}>
-          <div className="section">
-            <Estadisticas />
-          </div>
-          <div className="section">
-            <PreguntasRespondidas refresh={refreshRuleta} />
-          </div>
-        </div>
-      </div>
+    <Box minH="100vh" bg={useColorModeValue('gray.50', 'gray.900')} p={4}>
+      <ThemeToggle />
+      <Grid templateColumns={{ base: '1fr', md: '400px 1fr' }} gap={6} alignItems="start">
+        <GridItem>
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <Box bg={useColorModeValue('gray.50', 'gray.700')} p={6} borderRadius="lg" shadow="md" mb={6}>
+              <CargarCSV onCargar={handleCargar} />
+            </Box>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Box  p={6} borderRadius="lg" shadow="md">
+              <Ruleta key={refreshRuleta} onSeleccionarPregunta={handleSeleccionarPregunta} />
+            </Box>
+          </motion.div>
+        </GridItem>
+        <GridItem>
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <Box bg={useColorModeValue('gray.50', 'gray.700')} p={6} borderRadius="lg" shadow="md" mb={6}>
+              <Estadisticas />
+            </Box>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <Box bg={useColorModeValue('gray.50', 'gray.700')} p={6} borderRadius="lg" shadow="md">
+              <PreguntasRespondidas refresh={refreshRuleta} />
+            </Box>
+          </motion.div>
+        </GridItem>
+      </Grid>
       <ModalPregunta
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         pregunta={currentPregunta}
         onRespuesta={handleRespuesta}
       />
-    </div>
+    </Box>
   );
 };
 

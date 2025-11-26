@@ -1,5 +1,17 @@
 import { useState, useEffect } from 'react';
-import Modal from 'react-modal';
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  Button,
+  Text,
+  VStack,
+  useColorModeValue,
+} from '@chakra-ui/react';
+import { motion } from 'framer-motion';
 import useStore from '../store';
 import axios from 'axios';
 
@@ -77,8 +89,7 @@ const playErrorSound = () => {
   }
 };
 
-// Establecer el elemento raíz para el modal
-Modal.setAppElement('#root');
+// Chakra UI maneja el app element automáticamente
 
 const ModalPregunta = ({ isOpen, onClose, pregunta, onRespuesta }) => {
   const { responderPregunta } = useStore();
@@ -128,79 +139,74 @@ const ModalPregunta = ({ isOpen, onClose, pregunta, onRespuesta }) => {
 
   return (
     <>
-      <Modal
-        isOpen={isOpen}
-        onRequestClose={onClose}
-        contentLabel="Pregunta"
-        style={{
-          content: {
-            top: '50%',
-            left: '50%',
-            right: 'auto',
-            bottom: 'auto',
-            marginRight: '-50%',
-            transform: 'translate(-50%, -50%)',
-            width: '400px',
-            padding: '20px',
-            backgroundColor: '#2d3748',
-            color: 'white',
-            zIndex: 1000,
-          },
-          overlay: {
-            zIndex: 999,
-          },
-        }}
-      >
-        <h2>Pregunta</h2>
-        <p>{pregunta.frase}</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
-          {pregunta.opciones.map((opcion, index) => (
-            <button
-              key={index}
-              onClick={() => handleRespuesta(opcion)}
-              style={{
-                padding: '10px',
-                backgroundColor: selected === opcion ? '#3182ce' : '#4a5568',
-                color: 'white',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer',
-              }}
-            >
-              {opcion}
-            </button>
-          ))}
-        </div>
-        <button onClick={onClose} style={{ marginTop: '20px', backgroundColor: '#e53e3e', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '3px' }}>Cerrar</button>
+      <Modal isOpen={isOpen} onClose={onClose} size="lg">
+        <ModalOverlay />
+        <ModalContent bg={useColorModeValue('white', 'gray.800')}>
+          <ModalHeader color={useColorModeValue('gray.800', 'white')}>Pregunta</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <Text color="white" mb={4} fontSize="lg">{pregunta.frase}</Text>
+            <VStack spacing={3} align="stretch">
+              {pregunta.opciones.map((opcion, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1, duration: 0.3 }}
+                >
+                  <Button
+                    as={motion.button}
+                    onClick={() => handleRespuesta(opcion)}
+                    colorScheme={selected === opcion ? 'blue' : 'gray'}
+                    variant={selected === opcion ? 'solid' : 'outline'}
+                    size="lg"
+                    justifyContent="flex-start"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    width="100%"
+                  >
+                    {opcion}
+                  </Button>
+                </motion.div>
+              ))}
+            </VStack>
+          </ModalBody>
+        </ModalContent>
       </Modal>
 
-      <Modal
-        isOpen={showResult}
-        onRequestClose={handleCloseResult}
-        contentLabel="Resultado"
-        style={{
-          content: {
-            top: '50%',
-            left: '50%',
-            right: 'auto',
-            bottom: 'auto',
-            marginRight: '-50%',
-            transform: 'translate(-50%, -50%)',
-            width: '350px',
-            padding: '20px',
-            backgroundColor: resultData?.esCorrecto ? '#38a169' : '#e53e3e',
-            color: 'white',
-            zIndex: 1001,
-          },
-          overlay: {
-            zIndex: 1000,
-          },
-        }}
-      >
-        <h2>{resultData?.esCorrecto ? '¡Correcto!' : 'Incorrecto'}</h2>
-        <p>Tu respuesta: {resultData?.tuRespuesta}</p>
-        <p>Respuesta correcta: {resultData?.correcta}</p>
-        <button onClick={handleCloseResult} style={{ marginTop: '20px', backgroundColor: '#3182ce', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '3px' }}>Continuar</button>
+      <Modal isOpen={showResult} onClose={handleCloseResult} size="md">
+        <ModalOverlay />
+        <ModalContent
+          as={motion.div}
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.8, opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          bg={resultData?.esCorrecto ? 'green.500' : 'red.500'}
+          color="white"
+        >
+          <ModalHeader>{resultData?.esCorrecto ? '¡Correcto!' : 'Incorrecto'}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.3 }}
+            >
+              <Text>Tu respuesta: {resultData?.tuRespuesta}</Text>
+              <Text>Respuesta correcta: {resultData?.correcta}</Text>
+            </motion.div>
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.3 }}
+            >
+              <Button onClick={handleCloseResult} colorScheme="blue" mt={4}>
+                Continuar
+              </Button>
+            </motion.div>
+          </ModalBody>
+        </ModalContent>
       </Modal>
     </>
   );
