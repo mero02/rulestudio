@@ -20,20 +20,26 @@ async def importar_csv(file: UploadFile = File(...), db: Session = Depends(get_d
         if not line.strip() or i == 0:  # Saltar header y líneas vacías
             continue
         # Parsear línea como "número. frase","respuesta"
+        print(f"Procesando línea {i}: {line}")
         if '"' in line:
             parts = line.split('","')
             if len(parts) == 2:
                 num_frase = parts[0].strip('"')
                 respuesta = parts[1].strip('"')
+                print(f"Partes: num_frase={num_frase}, respuesta={respuesta}")
                 # Extraer número y frase
                 if '. ' in num_frase:
                     num, frase = num_frase.split('. ', 1)
                     id_valor = int(num)
+                    print(f"ID: {id_valor}, Frase: {frase}")
                 else:
+                    print("No tiene '. '")
                     continue
             else:
+                print("No tiene 2 partes")
                 continue
         else:
+            print("No tiene comillas")
             continue
 
         primera_palabra = respuesta.split()[0].upper().rstrip('.')
@@ -48,6 +54,7 @@ async def importar_csv(file: UploadFile = File(...), db: Session = Depends(get_d
             verdadero=es_verdadero
         )
         preguntas.append(pregunta)
+        print(f"Pregunta agregada: {pregunta.id}")
 
     if not preguntas:
         raise HTTPException(status_code=400, detail="CSV debe tener columnas: id, pregunta, respuesta_correcta o frase, respuesta")
