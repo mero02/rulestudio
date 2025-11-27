@@ -2,24 +2,35 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models import Pregunta
+from pydantic import BaseModel
 import csv
 import io
 
 router = APIRouter()
 
+class ResponderPreguntaRequest(BaseModel):
+    id: int
+    respuesta: str
+
 @router.post("/importar_csv")
-async def importar_csv(file: UploadFile = File(...), db: Session = Depends(get_db)):
+def importar_csv(file: UploadFile = File(...), db: Session = Depends(get_db)):
     if not file.filename.endswith('.csv'):
         raise HTTPException(status_code=400, detail="El archivo debe ser un CSV")
 
-    content = await file.read()
+    content = file.file.read()
     text_content = content.decode('utf-8')
-    lines = text_content.strip().split('\n')
+    csv_reader = csv.reader(io.StringIO(text_content))
     preguntas = []
-    for i, line in enumerate(lines):
-        if not line.strip() or i == 0:  # Saltar header y líneas vacías
+    chunk_size = 100  # Procesar en chunks de 100
+
+    for i, row in enumerate(csv_reader):
+        if i == 0:  # Saltar header
             continue
-        # Parsear línea como "número. frase","respuesta"
+        if not row or len(row) < 2:
+            continue
+
+        # Asumir formato: "número. frase","respuesta"
+        line = ','.join(row)
         if '"' in line:
             parts = line.split('","')
             if len(parts) == 2:
@@ -49,12 +60,18 @@ async def importar_csv(file: UploadFile = File(...), db: Session = Depends(get_d
         )
         preguntas.append(pregunta)
 
-    if not preguntas:
-        raise HTTPException(status_code=400, detail="CSV debe tener columnas: id, pregunta, respuesta_correcta o frase, respuesta")
+        # Procesar en chunks
+        if len(preguntas) >= chunk_size:
+            db.add_all(preguntas)
+            db.commit()
+            preguntas = []  # Reset para siguiente chunk
 
-    db.add_all(preguntas)
-    db.commit()
-    return {"message": f"{len(preguntas)} preguntas importadas exitosamente"}
+    # Procesar último chunk
+    if preguntas:
+        db.add_all(preguntas)
+        db.commit()
+
+    return {"message": "Preguntas importadas exitosamente"}
 
 @router.get("/preguntas/activas")
 def get_preguntas_activas(db: Session = Depends(get_db)):
@@ -74,7 +91,7 @@ def get_pregunta(pregunta_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Pregunta no encontrada")
     if pregunta.respondida:
         raise HTTPException(status_code=400, detail="Pregunta ya respondida")
-    
+
     return {
         "id": pregunta.id,
         "frase": pregunta.frase,
@@ -82,12 +99,9 @@ def get_pregunta(pregunta_id: int, db: Session = Depends(get_db)):
     }
 
 @router.post("/preguntas/responder")
-def responder_pregunta(data: dict, db: Session = Depends(get_db)):
-    pregunta_id = data.get("id")
-    respuesta = data.get("respuesta")
-
-    if not pregunta_id or not respuesta:
-        raise HTTPException(status_code=400, detail="Se requieren 'id' y 'respuesta'")
+def responder_pregunta(data: ResponderPreguntaRequest, db: Session = Depends(get_db)):
+    pregunta_id = data.id
+    respuesta = data.respuesta
 
     pregunta = db.query(Pregunta).filter(Pregunta.id == pregunta_id).first()
     if not pregunta:
