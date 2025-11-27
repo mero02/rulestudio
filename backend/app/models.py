@@ -8,4 +8,4 @@ class Pregunta(Base):
     frase = Column(String, nullable=False)
     respuesta = Column(String, nullable=False)
     verdadero = Column(Boolean, nullable=False)
-    respondida = Column(Boolean, default=False)
+    respondida = Column(Boolean, default=False, index=True)
