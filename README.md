@@ -1,20 +1,30 @@
 # Ruleta de Preguntas
 
-Este proyecto es una aplicación web que implementa un juego de ruleta interactiva para preguntas de verdadero o falso. La idea surgió de querer crear una herramienta divertida para eventos o clases donde se puedan cargar preguntas desde un archivo CSV y jugar girando una ruleta para seleccionar preguntas al azar.
+Este proyecto es una aplicación web que implementa un juego de ruleta interactiva con dos modos de juego: **Clásico** (verdadero/falso) y **Autoevaluación**. La idea surgió de querer crear una herramienta divertida para eventos o clases donde se puedan cargar preguntas desde un archivo CSV y jugar girando una ruleta para seleccionar preguntas al azar.
 
 ## Funcionalidades Principales
 
-- **Carga de Preguntas**: Sube un archivo CSV con preguntas en formato específico (número. frase,"VERDADERO/FALSO") para poblar la base de datos.
+### Modo Clásico
+- **Carga de Preguntas**: Sube un archivo CSV con preguntas verdadero/falso.
 - **Ruleta Interactiva**: Una ruleta visual que gira y selecciona una pregunta aleatoria entre las no respondidas.
 - **Respuestas**: Modal que muestra la pregunta y opciones de verdadero/falso. Solo se marca como respondida si aciertas.
 - **Estadísticas**: Muestra el total de preguntas, respondidas y activas.
 - **Historial**: Lista de preguntas ya respondidas con sus respuestas correctas.
 - **Reinicio**: Opción para resetear todas las preguntas a no respondidas.
+- **Gestión de Base de Datos**: Modal inteligente que detecta preguntas existentes y permite elegir entre borrar/agregar o solo agregar.
+
+### Modo Autoevaluación
+- **Carga de Preguntas**: Sube un archivo CSV con preguntas abiertas.
+- **Ruleta Interactiva**: Gira y selecciona preguntas al azar.
+- **Autoevaluación**: Después de responder, eliges "Respondí bien" (descarta) o "Respondí mal" (permanece activa).
+- **Estadísticas**: Conteo de evaluaciones bien/mal.
+- **Historial**: Lista de preguntas evaluadas como bien.
+- **Gestión de Base de Datos**: Modal inteligente que detecta preguntas existentes y permite elegir entre borrar/agregar o solo agregar.
 
 ## Tecnologías Usadas
 
-- **Backend**: FastAPI con SQLAlchemy y SQLite para la API REST.
-- **Frontend**: React con Vite, usando componentes como react-custom-roulette para la ruleta.
+- **Backend**: FastAPI con SQLAlchemy y PostgreSQL para la API REST.
+- **Frontend**: React con Vite, Chakra UI, Zustand, usando componentes como react-custom-roulette para la ruleta.
 - **Contenedorización**: Docker y Docker Compose para facilitar el despliegue.
 
 ## Cómo Levantarlo
@@ -38,13 +48,25 @@ La aplicación se conecta automáticamente entre frontend y backend a través de
 
 ## Formato del CSV
 
+### Modo Clásico (Verdadero/Falso)
 El archivo CSV debe tener el siguiente formato (sin header):
 ```
-"1. ¿Las vacas tienen 4 estomagos?","VERDADERO. porque son rumentes"
-"2. ¿Los peces vuelan?","FALSO. no tienen alas"
+pregunta,respuesta
+¿Las vacas tienen 4 estómagos?,VERDADERO. porque son rumiantes
+¿Los peces vuelan?,FALSO. no tienen alas
 ```
 
-Cada línea: `"número. pregunta","VERDADERO/FALSO. respuesta"`
+Cada línea: `pregunta,VERDADERO/FALSO. respuesta`
+
+### Modo Autoevaluación
+El archivo CSV debe tener el siguiente formato (sin header):
+```
+pregunta,respuesta
+¿Cuál es la capital de Francia?,París
+¿Cuánto es 2+2?,4
+```
+
+Cada línea: `pregunta,respuesta`
 
 ## Mejoras Futuras
 
