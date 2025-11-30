@@ -8,7 +8,7 @@ import {
   ModalCloseButton,
   Button,
   Text,
-  VStack,
+  HStack,
   Box,
   useColorModeValue,
 } from '@chakra-ui/react';
@@ -88,9 +88,11 @@ const ModalPreguntaAuto = ({ isOpen, onClose, pregunta, onRespuesta }) => {
         <ModalBody pb={6}>
           <Box
             position="relative"
-            height="300px"
+            minHeight="300px"
+            maxHeight="500px"
             width="100%"
             style={{ perspective: '1000px' }}
+            overflowY="auto"
           >
             <motion.div
               style={{
@@ -113,12 +115,13 @@ const ModalPreguntaAuto = ({ isOpen, onClose, pregunta, onRespuesta }) => {
                 flexDirection="column"
                 justifyContent="center"
                 alignItems="center"
-                p={6}
+                p={8}
                 borderRadius="lg"
                 bg={cardFrontBg}
                 border="2px solid"
                 borderColor={cardFrontBorder}
                 zIndex={isFlipped ? 0 : 1}
+                minHeight="280px"
               >
                 <Text
                   color={textColor}
@@ -151,13 +154,14 @@ const ModalPreguntaAuto = ({ isOpen, onClose, pregunta, onRespuesta }) => {
                 flexDirection="column"
                 justifyContent="center"
                 alignItems="center"
-                p={6}
+                p={8}
                 borderRadius="lg"
                 bg={cardBackBg}
                 border="2px solid"
                 borderColor={cardBackBorder}
                 zIndex={isFlipped ? 1 : 0}
                 transform="rotateY(180deg)"
+                minHeight="280px"
               >
                 <Text
                   color={textColor}
@@ -171,16 +175,20 @@ const ModalPreguntaAuto = ({ isOpen, onClose, pregunta, onRespuesta }) => {
                 <Text
                   color={textColor}
                   fontSize={{ base: 'sm', md: 'md' }}
-                  textAlign="center"
+                  textAlign="left"
                   mb={6}
-                  p={3}
+                  p={4}
                   bg={answerBoxBg}
                   borderRadius="md"
                   width="100%"
+                  whiteSpace="pre-wrap"
+                  wordBreak="break-word"
+                  maxHeight="200px"
+                  overflowY="auto"
                 >
                   {pregunta.respuesta}
                 </Text>
-                <VStack spacing={3} width="100%">
+                <HStack spacing={3} width="100%">
                   <motion.div
                     initial={{ opacity: 0, x: -50 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -221,7 +229,7 @@ const ModalPreguntaAuto = ({ isOpen, onClose, pregunta, onRespuesta }) => {
                       Respondí Mal
                     </Button>
                   </motion.div>
-                </VStack>
+                </HStack>
               </Box>
             </motion.div>
           </Box>
