@@ -76,7 +76,8 @@ def get_pregunta_autoevaluacion(pregunta_id: int, db: Session = Depends(get_db))
 
     return {
         "id": pregunta.id,
-        "frase": pregunta.frase
+        "frase": pregunta.frase,
+        "respuesta": pregunta.respuesta
     }
 
 @router.post("/preguntas/responder")

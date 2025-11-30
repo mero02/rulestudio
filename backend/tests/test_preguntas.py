@@ -77,6 +77,7 @@ def test_get_pregunta_autoevaluacion(setup_database):
     data = response.json()
     assert data["id"] == 1
     assert "frase" in data
+    assert "respuesta" in data
     assert "opciones" not in data  # No debe tener opciones en autoevaluación
 
 def test_responder_pregunta_bien_autoevaluacion(setup_database):

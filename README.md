@@ -16,7 +16,8 @@ Este proyecto es una aplicación web que implementa un juego de ruleta interacti
 ### Modo Autoevaluación
 - **Carga de Preguntas**: Sube un archivo CSV con preguntas abiertas.
 - **Ruleta Interactiva**: Gira y selecciona preguntas al azar.
-- **Autoevaluación**: Después de responder, eliges "Respondí bien" (descarta) o "Respondí mal" (permanece activa).
+- **Tarjeta Interactiva**: Muestra pregunta → botón "Girar Tarjeta" → revela respuesta → botones "Respondí bien/mal".
+- **Autoevaluación**: Después de ver la respuesta, eliges "Respondí bien" (descarta) o "Respondí mal" (permanece activa).
 - **Estadísticas**: Conteo de evaluaciones bien/mal.
 - **Historial**: Lista de preguntas evaluadas como bien.
 - **Gestión de Base de Datos**: Modal inteligente que detecta preguntas existentes y permite elegir entre borrar/agregar o solo agregar.
