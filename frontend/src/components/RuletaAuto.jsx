@@ -51,15 +51,21 @@ const playTickSound = () => {
   }
 };
 
-const RuletaAuto = ({ onSeleccionarPregunta }) => {
+const RuletaAuto = ({ onSeleccionarPregunta, preguntasActivas: preguntasActivasProp }) => {
   const [preguntasActivas, setPreguntasActivas] = useState([]);
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
   const tickIntervalRef = useRef(null);
 
   useEffect(() => {
-    fetchPreguntasActivas();
-  }, []);
+    if (preguntasActivasProp) {
+      // Usar preguntas proporcionadas (modo multi-jugador)
+      setPreguntasActivas(preguntasActivasProp);
+    } else {
+      // Fetchear todas las preguntas (modo clásico)
+      fetchPreguntasActivas();
+    }
+  }, [preguntasActivasProp]);
 
   const fetchPreguntasActivas = async () => {
     try {

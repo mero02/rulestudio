@@ -14,6 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import useStore from '../store';
 
 // Función para reproducir sonido de pregunta
 const playQuestionSound = () => {
@@ -40,9 +41,12 @@ const playQuestionSound = () => {
   }
 };
 
-const ModalPreguntaAuto = ({ isOpen, onClose, pregunta, onRespuesta }) => {
+const ModalPreguntaAuto = ({ isOpen, onClose, pregunta, onRespuesta, modoMultiJugador, jugadorActual }) => {
   const [selected, setSelected] = useState(null);
   const [isFlipped, setIsFlipped] = useState(false);
+
+  // Usar store para liberar turno
+  const { setTurnoBloqueado, setJugadorActual, setPreguntasJugadorActivas } = useStore();
 
   // Hooks deben estar antes de cualquier return condicional
   const modalBg = useColorModeValue('white', 'gray.800');
@@ -63,12 +67,29 @@ const ModalPreguntaAuto = ({ isOpen, onClose, pregunta, onRespuesta }) => {
 
   const handleRespuesta = async (evaluacion) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/autoevaluacion/preguntas/responder', {
-        id: pregunta.id,
-        evaluacion,
-      });
+      let response;
+      if (modoMultiJugador && jugadorActual) {
+        // Modo multi-jugador: enviar respuesta del jugador
+        response = await axios.post(`http://localhost:8000/api/jugadores/${jugadorActual.id}/preguntas/${pregunta.id}/responder`, {
+          evaluacion,
+        });
+      } else {
+        // Modo clásico
+        response = await axios.post('http://localhost:8000/api/autoevaluacion/preguntas/responder', {
+          id: pregunta.id,
+          evaluacion,
+        });
+      }
 
       onRespuesta(evaluacion === 'bien');
+
+      // En modo multi-jugador, liberar el turno directamente
+      if (modoMultiJugador && jugadorActual) {
+        setTurnoBloqueado(false);
+        setJugadorActual(null);
+        setPreguntasJugadorActivas([]);
+      }
+
       onClose(); // Cerrar modal inmediatamente
     } catch (error) {
       alert('Error al enviar evaluación');
