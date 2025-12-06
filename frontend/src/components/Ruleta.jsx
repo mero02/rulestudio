@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { Box, Button, Text } from '@chakra-ui/react';
+import { Box, Button, Text, VStack, HStack, Icon } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { Wheel } from 'react-custom-roulette';
+import { FaPlay, FaDice, FaSpinner } from 'react-icons/fa';
 import useStore from '../store';
 import axios from 'axios';
 
@@ -105,27 +106,55 @@ const Ruleta = ({ onSeleccionarPregunta }) => {
   }, []);
 
   return (
-    <Box textAlign="center">
+    <VStack spacing={6} align="center">
       {data.length > 0 ? (
         <>
-          <Button
-            as={motion.button}
-            onClick={handleSpinClick}
-            isDisabled={mustSpin}
-            colorScheme="brand"
-            size="lg"
-            mb={4}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            animate={mustSpin ? { rotate: 360 } : { rotate: 0 }}
-            transition={{ duration: 0.3 }}
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            Girar Ruleta
-          </Button>
-          <Box className="wheel-container">
+            <Button
+              as={motion.button}
+              onClick={handleSpinClick}
+              isDisabled={mustSpin}
+              variant="gradient"
+              size="lg"
+              px={8}
+              py={4}
+              leftIcon={mustSpin ? <Icon as={FaSpinner} /> : <Icon as={FaDice} />}
+              animate={mustSpin ? { rotate: 360 } : { rotate: 0 }}
+              transition={{ duration: 0.3 }}
+              boxShadow="2xl"
+              bgGradient="linear(to-r, wheel.primary, wheel.secondary)"
+              _hover={{
+                bgGradient: "linear(to-r, wheel.primary, wheel.accent)",
+                transform: "translateY(-2px)",
+                boxShadow: "3xl"
+              }}
+            >
+              {mustSpin ? 'Girando...' : '¡Girar Ruleta!'}
+            </Button>
+          </motion.div>
+
+          <Box
+            className="wheel-container"
+            p={6}
+            borderRadius="2xl"
+            bgGradient="radial(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)"
+            backdropFilter="blur(10px)"
+            border="1px solid"
+            borderColor="whiteAlpha.200"
+          >
             <motion.div
-              animate={mustSpin ? { rotate: [0, 10, -10, 0] } : { rotate: 0 }}
-              transition={{ duration: 0.5, repeat: mustSpin ? Infinity : 0 }}
+              animate={mustSpin ? {
+                rotate: [0, 5, -5, 0],
+                scale: [1, 1.05, 1]
+              } : { rotate: 0, scale: 1 }}
+              transition={{
+                duration: 0.3,
+                repeat: mustSpin ? Infinity : 0,
+                ease: "easeInOut"
+              }}
             >
               <Wheel
                 mustStartSpinning={mustSpin}
@@ -134,15 +163,31 @@ const Ruleta = ({ onSeleccionarPregunta }) => {
                 onStopSpinning={handleStopSpinning}
                 backgroundColors={['#ff8f43', '#70bbe0', '#0b3351', '#f9dd50']}
                 textColors={['#ffffff']}
-                spinDuration={0.5}
+                spinDuration={0.8}
+                outerBorderColor="#ffffff"
+                outerBorderWidth={3}
+                innerBorderColor="#ffffff"
+                innerBorderWidth={2}
+                radiusLineColor="#ffffff"
+                radiusLineWidth={2}
+                fontSize={16}
+                textDistance={60}
               />
             </motion.div>
           </Box>
         </>
       ) : (
-        <Text color="gray.600">No hay preguntas activas. Importa un CSV primero.</Text>
+        <VStack spacing={4} textAlign="center">
+          <Icon as={FaDice} boxSize="3xl" color="gray.400" />
+          <Text color="gray.600" fontSize="lg">
+            No hay preguntas activas
+          </Text>
+          <Text color="gray.500" fontSize="sm">
+            Importa un CSV primero para comenzar
+          </Text>
+        </VStack>
       )}
-    </Box>
+    </VStack>
   );
 };
 

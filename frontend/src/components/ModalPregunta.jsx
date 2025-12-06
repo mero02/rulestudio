@@ -10,8 +10,11 @@ import {
   Text,
   VStack,
   useColorModeValue,
+  Icon,
+  HStack,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
+import { FaCheck, FaTimes, FaQuestion } from 'react-icons/fa';
 import useStore from '../store';
 import axios from 'axios';
 
@@ -144,10 +147,25 @@ const ModalPregunta = ({ isOpen, onClose, pregunta, onRespuesta }) => {
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} size={{ base: 'sm', md: 'lg' }}>
-        <ModalOverlay />
-        <ModalContent bg={modalBg} mx={4}>
-          <ModalHeader color={textColor} fontSize={{ base: 'lg', md: 'xl' }}>
-            Pregunta
+        <ModalOverlay backdropFilter="blur(4px)" />
+        <ModalContent
+          bg={modalBg}
+          mx={4}
+          borderRadius="2xl"
+          boxShadow="2xl"
+          border="1px solid"
+          borderColor="whiteAlpha.200"
+        >
+          <ModalHeader
+            color={textColor}
+            fontSize={{ base: 'lg', md: 'xl' }}
+            textAlign="center"
+            pb={2}
+          >
+            <HStack justify="center" spacing={3}>
+              <Icon as={FaQuestion} color="brand.500" />
+              <Text>Pregunta</Text>
+            </HStack>
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
@@ -159,30 +177,50 @@ const ModalPregunta = ({ isOpen, onClose, pregunta, onRespuesta }) => {
             >
               {pregunta.frase}
             </Text>
-            <VStack spacing={3} align="stretch" role="radiogroup" aria-labelledby="question-text">
+            <VStack spacing={4} align="stretch" role="radiogroup" aria-labelledby="question-text">
               {pregunta.opciones.map((opcion, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: -50 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1, duration: 0.3 }}
+                  transition={{ delay: index * 0.1, duration: 0.4 }}
                 >
                   <Button
                     as={motion.button}
                     onClick={() => handleRespuesta(opcion)}
-                    colorScheme={selected === opcion ? 'blue' : 'gray'}
                     variant={selected === opcion ? 'solid' : 'outline'}
+                    colorScheme={selected === opcion ? 'brand' : 'gray'}
                     size={{ base: 'md', md: 'lg' }}
                     justifyContent="flex-start"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    px={6}
+                    py={4}
                     width="100%"
                     fontSize={{ base: 'sm', md: 'md' }}
+                    fontWeight="semibold"
+                    borderRadius="xl"
+                    borderWidth={2}
+                    whileHover={{
+                      scale: 1.02,
+                      boxShadow: 'lg',
+                      borderColor: 'brand.300'
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.2 }}
                     aria-pressed={selected === opcion}
                     role="option"
                     aria-selected={selected === opcion}
+                    _hover={{
+                      bg: selected === opcion ? 'brand.600' : 'brand.50',
+                      borderColor: 'brand.400'
+                    }}
                   >
-                    {opcion}
+                    <HStack spacing={3}>
+                      <Icon
+                        as={selected === opcion ? FaCheck : FaQuestion}
+                        color={selected === opcion ? 'white' : 'brand.500'}
+                      />
+                      <Text>{opcion}</Text>
+                    </HStack>
                   </Button>
                 </motion.div>
               ))}
@@ -192,39 +230,89 @@ const ModalPregunta = ({ isOpen, onClose, pregunta, onRespuesta }) => {
       </Modal>
 
       <Modal isOpen={showResult} onClose={handleCloseResult} size={{ base: 'sm', md: 'md' }}>
-        <ModalOverlay />
+        <ModalOverlay backdropFilter="blur(4px)" />
         <ModalContent
           as={motion.div}
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.8, opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          bg={resultData?.esCorrecto ? 'green.500' : 'red.500'}
+          initial={{ scale: 0.8, opacity: 0, rotate: -5 }}
+          animate={{ scale: 1, opacity: 1, rotate: 0 }}
+          exit={{ scale: 0.8, opacity: 0, rotate: 5 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          bgGradient={resultData?.esCorrecto ?
+            'linear(to-br, success.400, success.600)' :
+            'linear(to-br, error.400, error.600)'}
           color="white"
           mx={4}
+          borderRadius="2xl"
+          boxShadow="2xl"
+          border="2px solid white"
         >
-          <ModalHeader fontSize={{ base: 'lg', md: 'xl' }}>
-            {resultData?.esCorrecto ? '¡Correcto!' : 'Incorrecto'}
+          <ModalHeader
+            fontSize={{ base: 'lg', md: 'xl' }}
+            textAlign="center"
+            pb={2}
+          >
+            <HStack justify="center" spacing={3}>
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 0.5, repeat: 2 }}
+              >
+                <Icon
+                  as={resultData?.esCorrecto ? FaCheck : FaTimes}
+                  boxSize={6}
+                />
+              </motion.div>
+              <Text fontWeight="bold">
+                {resultData?.esCorrecto ? '¡Correcto!' : 'Incorrecto'}
+              </Text>
+            </HStack>
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.3 }}
-            >
-              <Text fontSize={{ base: 'sm', md: 'md' }}>Tu respuesta: {resultData?.tuRespuesta}</Text>
-              <Text fontSize={{ base: 'sm', md: 'md' }}>Respuesta correcta: {resultData?.correcta}</Text>
-            </motion.div>
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.4, duration: 0.3 }}
-            >
-              <Button onClick={handleCloseResult} colorScheme="blue" mt={4} size={{ base: 'sm', md: 'md' }}>
-                Continuar
-              </Button>
-            </motion.div>
+            <VStack spacing={4}>
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.3 }}
+              >
+                <VStack spacing={2} align="start">
+                  <HStack>
+                    <Text fontSize={{ base: 'sm', md: 'md' }} fontWeight="semibold">
+                      Tu respuesta:
+                    </Text>
+                    <Text fontSize={{ base: 'sm', md: 'md' }}>
+                      {resultData?.tuRespuesta}
+                    </Text>
+                  </HStack>
+                  <HStack>
+                    <Text fontSize={{ base: 'sm', md: 'md' }} fontWeight="semibold">
+                      Respuesta correcta:
+                    </Text>
+                    <Text fontSize={{ base: 'sm', md: 'md' }}>
+                      {resultData?.correcta}
+                    </Text>
+                  </HStack>
+                </VStack>
+              </motion.div>
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.3 }}
+              >
+                <Button
+                  onClick={handleCloseResult}
+                  variant="gradient"
+                  bg="whiteAlpha.200"
+                  color="white"
+                  _hover={{ bg: "whiteAlpha.300" }}
+                  mt={4}
+                  size={{ base: 'sm', md: 'md' }}
+                  px={6}
+                  borderRadius="xl"
+                >
+                  Continuar
+                </Button>
+              </motion.div>
+            </VStack>
           </ModalBody>
         </ModalContent>
       </Modal>

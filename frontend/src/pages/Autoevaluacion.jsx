@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Box, Grid, GridItem, useColorModeValue, Button, HStack, Text, VStack, Badge } from '@chakra-ui/react';
+import { Box, Grid, GridItem, useColorModeValue, Button, HStack, Text, VStack, Badge, Flex, Icon } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
+import { FaUsers, FaTrophy, FaGamepad, FaChartBar, FaPlay } from 'react-icons/fa';
 import CargarCSVAuto from '../components/CargarCSVAuto';
 import RuletaAuto from '../components/RuletaAuto';
 import ModalPreguntaAuto from '../components/ModalPreguntaAuto';
@@ -14,7 +15,7 @@ import useStore from '../store';
 import axios from 'axios';
 
 const Autoevaluacion = () => {
-  // Estado del store para modo multi-jugador - MOVER AL PRINCIPIO
+  // TODOS los hooks deben estar al principio y en el mismo orden siempre
   const {
     modoMultiJugador,
     setModoMultiJugador,
@@ -32,6 +33,21 @@ const Autoevaluacion = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentPregunta, setCurrentPregunta] = useState(null);
   const [refreshRuleta, setRefreshRuleta] = useState(0);
+
+  // Chakra UI hooks - deben estar después de los hooks de estado pero antes de cualquier return
+  const bgGradient = useColorModeValue(
+    'linear(to-br, gray.50, green.50)',
+    'linear(to-br, gray.900, green.900)'
+  );
+
+  const toggleBg = useColorModeValue('white', 'gray.800');
+  const toggleBorderColor = useColorModeValue('gray.200', 'gray.600');
+  const cardBg = useColorModeValue('white', 'gray.800');
+  const cardBorderColor = useColorModeValue('gray.200', 'gray.600');
+  const playerCardBg = useColorModeValue(
+    'linear(to-br, success.50, success.100)',
+    'linear(to-br, success.900, success.800)'
+  );
 
   const handleSeleccionarPregunta = async (id) => {
     try {
@@ -105,169 +121,308 @@ const Autoevaluacion = () => {
   };
 
   return (
-    <Box minH="100vh" bg={useColorModeValue('gray.50', 'gray.900')} p={4}>
-      <ThemeToggle />
+    <Box
+      minH="100vh"
+      bgGradient={bgGradient}
+      p={{ base: 4, md: 6 }}
+    >
+      <Flex justify="flex-end" mb={6}>
+        <ThemeToggle />
+      </Flex>
 
       {/* Toggle de modo */}
-      <Box textAlign="center" mb={6}>
-        <HStack justify="center" spacing={4}>
-          <Button
-            colorScheme={!modoMultiJugador ? "blue" : "gray"}
-            variant={!modoMultiJugador ? "solid" : "outline"}
-            onClick={() => setModoMultiJugador(false)}
+      <Box textAlign="center" mb={8}>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <HStack
+            justify="center"
+            spacing={4}
+            bg={toggleBg}
+            p={4}
+            borderRadius="2xl"
+            shadow="lg"
+            border="1px solid"
+            borderColor={toggleBorderColor}
+            backdropFilter="blur(10px)"
           >
-            Modo Clásico
-          </Button>
-          <Button
-            colorScheme={modoMultiJugador ? "green" : "gray"}
-            variant={modoMultiJugador ? "solid" : "outline"}
-            onClick={toggleModoMultiJugador}
-          >
-            Modo Multi-Jugador
-          </Button>
-        </HStack>
+            <Button
+              colorScheme={!modoMultiJugador ? "brand" : "gray"}
+              variant={!modoMultiJugador ? "solid" : "outline"}
+              onClick={() => setModoMultiJugador(false)}
+              leftIcon={<Icon as={FaGamepad} />}
+              size="lg"
+              px={6}
+              borderRadius="xl"
+            >
+              Modo Clásico
+            </Button>
+            <Button
+              colorScheme={modoMultiJugador ? "success" : "gray"}
+              variant={modoMultiJugador ? "solid" : "outline"}
+              onClick={toggleModoMultiJugador}
+              leftIcon={<Icon as={FaUsers} />}
+              size="lg"
+              px={6}
+              borderRadius="xl"
+            >
+              Modo Multi-Jugador
+            </Button>
+          </HStack>
+        </motion.div>
       </Box>
 
       {!modoMultiJugador ? (
         /* Modo Clásico */
-        <Grid templateColumns={{ base: '1fr', md: '400px 1fr' }} gap={6} alignItems="start">
+        <Grid
+          templateColumns={{ base: '1fr', lg: '450px 1fr' }}
+          gap={{ base: 6, md: 8 }}
+          alignItems="start"
+          maxW="1400px"
+          mx="auto"
+        >
           <GridItem>
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              <Box bg={useColorModeValue('gray.50', 'gray.700')} p={6} borderRadius="lg" shadow="md" mb={6}>
-                <CargarCSVAuto onCargar={handleCargar} />
-              </Box>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <Box p={6} borderRadius="lg" shadow="md">
-                <RuletaAuto key={refreshRuleta} onSeleccionarPregunta={handleSeleccionarPregunta} />
-              </Box>
-            </motion.div>
+            <VStack spacing={6} align="stretch">
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
+                <Box
+                  bg={useColorModeValue('white', 'gray.800')}
+                  p={6}
+                  borderRadius="2xl"
+                  shadow="xl"
+                  border="1px solid"
+                  borderColor={useColorModeValue('gray.200', 'gray.600')}
+                  backdropFilter="blur(10px)"
+                >
+                  <VStack spacing={4} align="start">
+                    <HStack>
+                      <Icon as={FaGamepad} color="brand.500" />
+                      <Text fontSize="lg" fontWeight="bold">Configuración</Text>
+                    </HStack>
+                    <CargarCSVAuto onCargar={handleCargar} />
+                  </VStack>
+                </Box>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <Box
+                  bg={cardBg}
+                  p={6}
+                  borderRadius="2xl"
+                  shadow="xl"
+                  border="1px solid"
+                  borderColor={cardBorderColor}
+                  backdropFilter="blur(10px)"
+                >
+                  <RuletaAuto key={refreshRuleta} onSeleccionarPregunta={handleSeleccionarPregunta} />
+                </Box>
+              </motion.div>
+            </VStack>
           </GridItem>
           <GridItem>
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <Box bg={useColorModeValue('gray.50', 'gray.700')} p={6} borderRadius="lg" shadow="md" mb={6}>
-                <EstadisticasAuto refresh={refreshRuleta} />
-              </Box>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-            >
-              <Box bg={useColorModeValue('gray.50', 'gray.700')} p={6} borderRadius="lg" shadow="md">
-                <PreguntasRespondidasAuto refresh={refreshRuleta} />
-              </Box>
-            </motion.div>
+            <VStack spacing={6} align="stretch">
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <Box
+                  bg={cardBg}
+                  p={6}
+                  borderRadius="2xl"
+                  shadow="xl"
+                  border="1px solid"
+                  borderColor={cardBorderColor}
+                  backdropFilter="blur(10px)"
+                >
+                  <VStack spacing={4} align="start">
+                    <HStack>
+                      <Icon as={FaChartBar} color="brand.500" />
+                      <Text fontSize="lg" fontWeight="bold">Estadísticas</Text>
+                    </HStack>
+                    <EstadisticasAuto refresh={refreshRuleta} />
+                  </VStack>
+                </Box>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                <Box
+                  bg={useColorModeValue('white', 'gray.800')}
+                  p={6}
+                  borderRadius="2xl"
+                  shadow="xl"
+                  border="1px solid"
+                  borderColor={useColorModeValue('gray.200', 'gray.600')}
+                  backdropFilter="blur(10px)"
+                >
+                  <PreguntasRespondidasAuto refresh={refreshRuleta} />
+                </Box>
+              </motion.div>
+            </VStack>
           </GridItem>
         </Grid>
       ) : (
         /* Modo Multi-Jugador */
-        <Grid templateColumns={{ base: '1fr', md: '300px 400px 1fr' }} gap={6} alignItems="start">
+        <Grid
+          templateColumns={{ base: '1fr', lg: '320px 450px 1fr' }}
+          gap={{ base: 6, md: 8 }}
+          alignItems="start"
+          maxW="1400px"
+          mx="auto"
+        >
           <GridItem>
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              <Box bg={useColorModeValue('gray.50', 'gray.700')} p={6} borderRadius="lg" shadow="md" mb={6}>
-                <CargarCSVAuto onCargar={handleCargar} />
-              </Box>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <GestionJugadores onJugadoresChange={handleJugadoresChange} />
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <VStack spacing={4} mt={6}>
-                <Button
-                  colorScheme="green"
-                  onClick={iniciarJuego}
-                  isDisabled={juegoIniciado}
-                  width="100%"
-                >
-                  {juegoIniciado ? 'Juego Iniciado' : 'Iniciar Juego'}
-                </Button>
-                <Button
-                  colorScheme="red"
-                  variant="outline"
-                  onClick={reiniciarJuego}
-                  width="100%"
-                >
-                  Reiniciar Juego
-                </Button>
-              </VStack>
-            </motion.div>
-          </GridItem>
-
-          <GridItem>
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-            >
-              <Box p={6} borderRadius="lg" shadow="md" mb={6}>
-                <RuletaJugadores
-                  onJugadorSeleccionado={handleJugadorSeleccionado}
-                  juegoIniciado={juegoIniciado}
-                />
-              </Box>
-            </motion.div>
-
-            {jugadorActual && (
+            <VStack spacing={6} align="stretch">
               <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
               >
                 <Box
+                  bg={useColorModeValue('white', 'gray.800')}
                   p={6}
-                  borderRadius="lg"
-                  shadow="md"
-                  border="3px solid"
-                  borderColor="green.400"
-                  bg="green.50"
-                  _dark={{ bg: "green.900", borderColor: "green.300" }}
+                  borderRadius="2xl"
+                  shadow="xl"
+                  border="1px solid"
+                  borderColor={useColorModeValue('gray.200', 'gray.600')}
+                  backdropFilter="blur(10px)"
                 >
-                  <VStack spacing={4}>
-                    <HStack spacing={3} justify="center">
-                      <Text fontSize="lg" fontWeight="bold">
-                        🎯 Turno de: {jugadorActual.nombre}
-                      </Text>
-                      <Badge colorScheme="green" variant="solid" fontSize="sm">
-                        ACTIVO
-                      </Badge>
+                  <VStack spacing={4} align="start">
+                    <HStack>
+                      <Icon as={FaGamepad} color="brand.500" />
+                      <Text fontSize="lg" fontWeight="bold">Configuración</Text>
                     </HStack>
-                    <Text fontSize="sm" color="gray.600" textAlign="center">
-                      Solo se muestran las preguntas asignadas a este jugador
-                    </Text>
-                    <RuletaAuto
-                      key={`jugador-${jugadorActual.id}-${refreshRuleta}`}
-                      onSeleccionarPregunta={handleSeleccionarPregunta}
-                      preguntasActivas={preguntasJugadorActivas}
-                    />
+                    <CargarCSVAuto onCargar={handleCargar} />
                   </VStack>
                 </Box>
               </motion.div>
-            )}
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <Box
+                  bg={cardBg}
+                  p={6}
+                  borderRadius="2xl"
+                  shadow="xl"
+                  border="1px solid"
+                  borderColor={cardBorderColor}
+                  backdropFilter="blur(10px)"
+                >
+                  <VStack spacing={4} align="start">
+                    <HStack>
+                      <Icon as={FaUsers} color="brand.500" />
+                      <Text fontSize="lg" fontWeight="bold">Jugadores</Text>
+                    </HStack>
+                    <GestionJugadores onJugadoresChange={handleJugadoresChange} />
+                  </VStack>
+                </Box>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <VStack spacing={4}>
+                  <Button
+                    colorScheme="success"
+                    variant="gradient"
+                    onClick={iniciarJuego}
+                    isDisabled={juegoIniciado}
+                    width="100%"
+                    size="lg"
+                    leftIcon={<Icon as={FaPlay} />}
+                  >
+                    {juegoIniciado ? 'Juego Iniciado' : 'Iniciar Juego'}
+                  </Button>
+                  <Button
+                    colorScheme="error"
+                    variant="outline"
+                    onClick={reiniciarJuego}
+                    width="100%"
+                    size="lg"
+                    leftIcon={<Icon as={FaTrophy} />}
+                    _hover={{ bg: "error.50" }}
+                  >
+                    Reiniciar Juego
+                  </Button>
+                </VStack>
+              </motion.div>
+            </VStack>
+          </GridItem>
+
+          <GridItem>
+            <VStack spacing={6} align="stretch">
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                <Box
+                  bg={cardBg}
+                  p={6}
+                  borderRadius="2xl"
+                  shadow="xl"
+                  border="1px solid"
+                  borderColor={cardBorderColor}
+                  backdropFilter="blur(10px)"
+                >
+                  <RuletaJugadores
+                    onJugadorSeleccionado={handleJugadorSeleccionado}
+                    juegoIniciado={juegoIniciado}
+                  />
+                </Box>
+              </motion.div>
+
+              {jugadorActual && (
+                <motion.div
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                >
+                  <Box
+                    p={6}
+                    borderRadius="2xl"
+                    shadow="2xl"
+                    border="3px solid"
+                    borderColor="success.400"
+                    bgGradient={playerCardBg}
+                    backdropFilter="blur(10px)"
+                  >
+                    <VStack spacing={4}>
+                      <HStack spacing={3} justify="center">
+                        <Icon as={FaTrophy} color="success.600" />
+                        <Text fontSize="lg" fontWeight="bold">
+                          Turno de: {jugadorActual.nombre}
+                        </Text>
+                        <Badge colorScheme="success" variant="solid" fontSize="sm" borderRadius="lg">
+                          ACTIVO
+                        </Badge>
+                      </HStack>
+                      <Text fontSize="sm" color="gray.600" textAlign="center">
+                        Solo se muestran las preguntas asignadas a este jugador
+                      </Text>
+                      <RuletaAuto
+                        key={`jugador-${jugadorActual.id}-${refreshRuleta}`}
+                        onSeleccionarPregunta={handleSeleccionarPregunta}
+                        preguntasActivas={preguntasJugadorActivas}
+                      />
+                    </VStack>
+                  </Box>
+                </motion.div>
+              )}
+            </VStack>
           </GridItem>
 
           <GridItem>
@@ -276,7 +431,24 @@ const Autoevaluacion = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.6 }}
             >
-              <Puntajes refreshTrigger={refreshRuleta} />
+              <Box
+                bg={cardBg}
+                p={6}
+                borderRadius="2xl"
+                shadow="xl"
+                border="1px solid"
+                borderColor={cardBorderColor}
+                backdropFilter="blur(10px)"
+                height="fit-content"
+              >
+                <VStack spacing={4} align="start">
+                  <HStack>
+                    <Icon as={FaTrophy} color="gold.500" />
+                    <Text fontSize="lg" fontWeight="bold">Puntuaciones</Text>
+                  </HStack>
+                  <Puntajes refreshTrigger={refreshRuleta} />
+                </VStack>
+              </Box>
             </motion.div>
           </GridItem>
         </Grid>
